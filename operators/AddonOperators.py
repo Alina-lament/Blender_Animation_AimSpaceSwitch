@@ -61,3 +61,34 @@ class Animation2Operator(bpy.types.Operator):
     def execute(self, context: bpy.types.Context):
         bpy.ops.object.animation_ops(zoom=10, zoom_collection='Rotate')
         return {'FINISHED'}
+
+
+class DancingOperator(bpy.types.Operator):
+    '''DancingAddon'''
+    bl_idname = "object.dancing_ops"
+    bl_label = "DancingOperator"
+
+    _timer = None
+
+    # 确保在操作之前备份数据，用户撤销操作时可以恢复
+    bl_options = {'REGISTER', 'UNDO'}
+
+    # 操作的前提条件
+    @classmethod
+    def poll(cls, context: bpy.types.Context):
+        return context.active_object is not None
+
+    def invoke(self, context: bpy.types.Context, event: bpy.types.Event):
+        # self.inital_location = context.active_object.location.copy()
+        context.window_manager.modal_handler_add(self)
+        self._timer = context.window_manager.event_timer_add(0.1, window= context.window)
+        return {'RUNNING_MODAL'}
+
+    def modal(self, context: bpy.types.Context, event: bpy.types.Event):
+        if event.type == 'TIMER':
+            context.active_object.rotation_euler[2] += math.pi * 2 / 100
+            return {'RUNNING_MODAL'}
+        if event.type == 'ESC':
+            context.window_manager.event_timer_remove(self._timer)
+            return {'CANCELLED'}
+        return {'PASS_THROUGH'}
