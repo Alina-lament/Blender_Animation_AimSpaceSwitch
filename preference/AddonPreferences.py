@@ -27,6 +27,12 @@ class ExampleAddonPreferences(AddonPreferences):
         name="Boolean Config",
         default=False,
     )
+    number2: IntProperty(
+        name="Number Config",
+        default=0,
+        min=0,
+        max=10,
+    )
 
     def draw(self, context: bpy.types.Context):
         layout = self.layout
@@ -34,3 +40,4 @@ class ExampleAddonPreferences(AddonPreferences):
         layout.prop(self, "filepath")
         layout.prop(self, "number")
         layout.prop(self, "boolean")
+        layout.prop(self, "number2")
